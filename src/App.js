@@ -2,10 +2,35 @@ import "./App.css";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { colors } from "@mui/material";
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDJINUxCGMh29PWBDTko-eSPGYlgVHr5sk",
+  authDomain: "todolist-e37ec.firebaseapp.com",
+  projectId: "todolist-e37ec",
+  storageBucket: "todolist-e37ec.appspot.com",
+  messagingSenderId: "908722150641",
+  appId: "1:908722150641:web:58f7168053d0065c461d50",
+  measurementId: "G-SPJ77CL2BM",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 //Todo 아이템 버튼 눌릴때 스태이트에 추가하는 callback function 만들어서 props 로 패스하기
-let todoItemId = 0;
+const db = getFirestore(app);
 
+//투두리스트 입력칸
 const TodoItemInputField = (props) => {
   const [input, setInput] = useState("");
   console.log(input);
@@ -79,11 +104,16 @@ const TodoItemList = (props) => {
 function App() {
   const [todoItemList, setTodoItemList] = useState([]);
 
-  const onSubmit = (newTodoItem) => {
+  const onSubmit = async (newTodoItem) => {
+    const docRef = await addDoc(collection(db, "todoItem"), {
+      todoItemContent: newTodoItem,
+      isFinished: false,
+    });
+
     setTodoItemList([
       ...todoItemList,
       {
-        id: todoItemId++,
+        id: docRef.id,
         todoItemContent: newTodoItem,
         isFinished: false,
       },
@@ -127,3 +157,6 @@ function App() {
 }
 
 export default App;
+
+//프론트딴에서는 다 완료, 하지만 새로고침하면 다 날라간다.
+// 이거 저장하고싶으면 백엔드에 저장을 해야함, 그러기 위해서는 백엔드 필요함
