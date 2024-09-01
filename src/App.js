@@ -35,6 +35,7 @@ const TodoItemInputField = (props) => {
 };
 
 // 등록된 todo 아이템을 위한 todoitem 리엑트 컴포넌트 만들기
+// 삭제버튼 넣기
 const TodoItem = (props) => {
   const style = props.todoItem.isFinished
     ? { textDecoration: "line-through" }
@@ -44,6 +45,12 @@ const TodoItem = (props) => {
       <span style={style} onClick={() => props.onTodoItemClick(props.todoItem)}>
         {props.todoItem.todoItemContent}
       </span>
+      <Button
+        variant="outlined"
+        onClick={() => props.onRemoveClick(props.todoItem)}
+      >
+        Remove
+      </Button>
     </li>
   );
 };
@@ -57,6 +64,7 @@ const TodoItemList = (props) => {
         key={index}
         todoItem={todoItem}
         onTodoItemClick={props.onTodoItemClick}
+        onRemoveClick={props.onRemoveClick}
       />
     );
   });
@@ -98,12 +106,21 @@ function App() {
     );
   };
 
+  const onRemoveClick = (removedTodoItem) => {
+    setTodoItemList(
+      todoItemList.filter((todoItem) => {
+        return todoItem.id !== removedTodoItem.id;
+      })
+    );
+  };
+
   return (
     <div className="App">
       <TodoItemInputField onSubmit={onSubmit} />
       <TodoItemList
         todoItemList={todoItemList}
         onTodoItemClick={onTodoItemClick}
+        onRemoveClick={onRemoveClick}
       />
     </div>
   );
